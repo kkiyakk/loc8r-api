@@ -1,9 +1,6 @@
 var request = require('request');
 
-const apiOptions = {
-  server: 'http://localhost:3000'
-};
-
+const apiOptions = { server: 'http://localhost:3000' };
 if (process.env.NODE_ENV === 'production') {
   apiOptions.server = 'https://loc8r-api-4-sob8.onrender.com';
 }
@@ -14,17 +11,13 @@ const homelist = (req, res) => {
     url: `${apiOptions.server}${path}`,
     method: 'GET',
     json: true,
-    qs: {
-      lng: 127.264227, 
-      lat: 37.011746,
-      maxDistance: 20000
-    }
+    qs: { lng: 127.264227, lat: 37.011746, maxDistance: 20000 }
   };
 
   request(requestOptions, (err, response, body) => {
     let data = [];
     if (!err && response.statusCode === 200 && Array.isArray(body)) {
-      data = body.map((item) => {
+      data = body.map(item => {
         item.distance = formatDistance(item.distance);
         return item;
       });
@@ -35,9 +28,8 @@ const homelist = (req, res) => {
   });
 };
 
-const formatDistance = (distance) => {
-  let thisDistance = 0;
-  let unit = 'm';
+const formatDistance = distance => {
+  let thisDistance = 0, unit = 'm';
   if (distance > 1000) {
     thisDistance = parseFloat(distance / 1000).toFixed(1);
     unit = 'km';
@@ -67,12 +59,9 @@ const renderHomepage = (req, res, responseBody) => {
 
 const getLocationInfo = (req, res, callback) => {
   const path = `/api/locations/${req.params.locationid}`;
-  const requestOptions = {
-    url: `${apiOptions.server}${path}`,
-    method: 'GET',
-    json: true
-  };
-  request(requestOptions, (err, { statusCode }, body) => {
+  const requestOptions = { url: `${apiOptions.server}${path}`, method: 'GET', json: true };
+
+  request(requestOptions, (err, { statusCode } = {}, body) => {
     if (!err && statusCode === 200 && body) {
       body.coords = { lng: body.coords[0], lat: body.coords[1] };
       callback(req, res, body);
@@ -82,9 +71,7 @@ const getLocationInfo = (req, res, callback) => {
   });
 };
 
-const locationInfo = (req, res) => {
-  getLocationInfo(req, res, (req, res, responseData) => renderDetailPage(req, res, responseData));
-};
+const locationInfo = (req, res) => getLocationInfo(req, res, (req, res, data) => renderDetailPage(req, res, data));
 
 const renderDetailPage = (req, res, location) => {
   res.render('location-info', {
@@ -98,41 +85,30 @@ const renderDetailPage = (req, res, location) => {
   });
 };
 
-const addReview = (req, res) => {
-  getLocationInfo(req, res, (req, res, responseData) => renderReviewForm(req, res, responseData));
-};
+const addReview = (req, res) => getLocationInfo(req, res, (req, res, data) => renderReviewForm(req, res, data));
 
 const renderReviewForm = (req, res, { name }) => {
-  res.render('location-review-form', {
-    title: `Review ${name} on Loc8r`,
-    pageHeader: { title: `Review ${name}` },
-    error: req.query.err
-  });
+  res.render('location-review-form', { title: `Review ${name} on Loc8r`, pageHeader: { title: `Review ${name}` }, error: req.query.err });
 };
 
 const doAddReview = (req, res) => {
   const locationid = req.params.locationid;
-  const path = `/api/locations/${locationid}/reviews`;
   const postdata = { author: req.body.name, rating: parseInt(req.body.rating, 10), reviewText: req.body.review };
   if (!postdata.author || !postdata.rating || !postdata.reviewText) {
     res.redirect(`/location/${locationid}/review/new?err=val`);
     return;
   }
+  const path = `/api/locations/${locationid}/reviews`;
   const requestOptions = { url: `${apiOptions.server}${path}`, method: 'POST', json: postdata };
-  request(requestOptions, (err, { statusCode }, body) => {
-    if (statusCode === 201) {
-      res.redirect(`/location/${locationid}`);
-    } else if (statusCode === 400 && body.name === 'ValidationError') {
-      res.redirect(`/location/${locationid}/review/new?err=val`);
-    } else {
-      showError(req, res, statusCode);
-    }
+  request(requestOptions, (err, { statusCode } = {}, body) => {
+    if (statusCode === 201) res.redirect(`/location/${locationid}`);
+    else if (statusCode === 400 && body.name === 'ValidationError') res.redirect(`/location/${locationid}/review/new?err=val`);
+    else showError(req, res, statusCode);
   });
 };
 
 const showError = (req, res, status) => {
-  let title = '';
-  let content = '';
+  let title = '', content = '';
   if (status === 404) {
     title = '404, page not found';
     content = 'Oh dear. Looks like you can\'t find this page. Sorry.';
