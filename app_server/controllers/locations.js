@@ -5,7 +5,7 @@ const apiOptions = {
 };
 
 if (process.env.NODE_ENV === 'production') {
-  apiOptions.server = 'https://loc8r-api-6.onrender.com';
+  apiOptions.server = 'https://loc8r-api-4-sob8.onrender.com';
 }
 
 const homelist = (req, res) => {
@@ -17,7 +17,7 @@ const homelist = (req, res) => {
     qs: {
       lng: 127.264227, 
       lat: 37.011746,
-      maxDistance: 2000000
+      maxDistance: 20000
     }
   };
 
@@ -189,4 +189,3 @@ module.exports = {
   addReview,
   doAddReview
 };
-

@@ -11,7 +11,7 @@ block content
   .row 
     .col-12.col-md-8
       .error= message
-      app-home-list 
+      each location in locations 
         .card 
           .card-block 
             h4 
@@ -25,7 +25,3 @@ block content
                       
     .col-12.col-md-4 
       p.lead= sidebar
-
-  blick scripts
-    script(src='/build/main-TX5Q4TJY.js')
-    script(src='/build/polyfills-6EAL64PA.js')
