@@ -86,10 +86,12 @@ h1 small {
 
 .facilities span.badge {
   margin-right: 2px;
+  background-color: #fd7e14;
 }
 
 p {
   margin-bottom: 0.65rem;
+  color: white;
 }
 
 a {

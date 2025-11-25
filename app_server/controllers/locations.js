@@ -17,7 +17,7 @@ const homelist = (req, res) => {
     qs: {
       lng: 127.264227, 
       lat: 37.011746,
-      maxDistance: 20000
+      maxDistance: 2000000
     }
   };
 
@@ -189,4 +189,3 @@ module.exports = {
   addReview,
   doAddReview
 };
-
