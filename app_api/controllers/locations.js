@@ -12,7 +12,7 @@ const locationsListByDistance = async (req, res) => {
     distanceField: "distance.calculated",
     key: 'coords',
     spherical: true,
-    maxDistance: 2000000,
+    maxDistance: 200000,
   };
   if (!lng || !lat) {
     return res
@@ -49,24 +49,6 @@ const locationsListByDistance = async (req, res) => {
   }
 };
 
-const locationsReadOne = async (req, res) => {
-  try {
-    const location = await Loc.findById(req.params.locationid).exec();
-    if (!location) {
-      return res
-        .status(404)
-        .json({ "message": "location not found" });
-    }
-    return res
-      .status(200)
-      .json(location);
-  } catch (err) {
-    return res
-      .status(400)
-      .json(err);
-  }
-};
-
 const locationsCreate = async (req, res) => {
   try {
     const location = await Loc.create({
@@ -95,7 +77,6 @@ const locationsCreate = async (req, res) => {
         }
       ]
     });
-    
     return res
       .status(201)
       .json(location);
@@ -106,6 +87,25 @@ const locationsCreate = async (req, res) => {
       .json(err);
   }
 };
+
+const locationsReadOne = async (req, res) => {
+  try {
+    const location = await Loc.findById(req.params.locationid).exec();
+    if (!location) {
+      return res
+        .status(404)
+        .json({ "message": "location not found" });
+    }
+    return res
+      .status(200)
+      .json(location);
+  } catch (err) {
+    return res
+      .status(404)
+      .json(err);
+  }
+};
+
 
 const locationsUpdateOne = async (req, res) => {
   if (!req.params.locationid) {
@@ -164,8 +164,7 @@ const locationsDeleteOne = async (req, res) => {
       });
   }
   try {
-    const location = await Loc.findByIdAndDelete(locationid).exec();
-    
+    const location = await Loc.findByIdAndRemove(locationid).exec();
     if (!location) {
       return res
         .status(404)
@@ -173,7 +172,6 @@ const locationsDeleteOne = async (req, res) => {
           "message": "locationid not found"
         });
     }
-    
     return res
       .status(204)
       .json(null);

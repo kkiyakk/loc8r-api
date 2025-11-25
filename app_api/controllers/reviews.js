@@ -1,7 +1,5 @@
-
 const mongoose = require('mongoose');
 const Loc = mongoose.model('Location');
-
 
 const doSetAverageRating = async (location) => {
   if (location.reviews && location.reviews.length > 0) {
@@ -17,18 +15,6 @@ const doSetAverageRating = async (location) => {
     } catch (err) {
       console.log(err);
     }
-  }
-};
-
-const updateAverageRating = async (locationId) => {
-  
-  try {
-    const location = await Loc.findById(locationId).select('rating reviews').exec();
-    if (location) {
-      await doSetAverageRating(location);
-    }
-  } catch (err) {
-    console.log(err);
   }
 };
 
@@ -50,12 +36,22 @@ const doAddReview = async (req, res, location) => {
   }
 };
 
+const updateAverageRating = async (locationId) => {
+  try {
+    const location = await Loc.findById(locationId).select('rating reviews').exec();
+    if (location) {
+      await doSetAverageRating(location);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const reviewsCreate = async (req, res) => {
   const locationId = req.params.locationid;
   if (!locationId) {
     return res.status(404).json({ "message": "Location not found" });
   }
-  
 
   try {
     const location = await Loc.findById(locationId).select('reviews').exec();
@@ -69,23 +65,19 @@ const reviewsCreate = async (req, res) => {
   }
 };
 
-
-
 const reviewsReadOne = async (req, res) => {
   try {
     const location = await Loc.findById(req.params.locationid).select('name reviews').exec();
     if (!location) {
-      return res
-        .status(404)
-        .json({ "message": "location not found" });
+      return res.status(404).json({ "message": "location not found" });
     }
+
     if (location.reviews && location.reviews.length > 0) {
       const review = location.reviews.id(req.params.reviewid);
       if (!review) {
-        return res
-          .status(404)
-          .json({ "message": "review not found" });
+        return res.status(404).json({ "message": "review not found" });
       }
+
       const response = {
         location: {
           name: location.name,
@@ -93,18 +85,12 @@ const reviewsReadOne = async (req, res) => {
         },
         review
       };
-      return res
-        .status(200)
-        .json(response);
+      return res.status(200).json(response);
     } else {
-      return res
-        .status(404)
-        .json({ "message": "No reviews found" });
+      return res.status(404).json({ "message": "No reviews found" });
     }
   } catch (err) {
-    return res
-      .status(400)
-      .json(err);
+    return res.status(400).json(err);
   }
 };
 
@@ -158,7 +144,7 @@ const reviewsDeleteOne = async (req, res) => {
         return res.status(404).json({ 'message': 'Review not found' });
       }
 
-      review.deleteOne();
+      review.remove();
       await location.save();
       await updateAverageRating(location._id);
       return res.status(204).json(null);

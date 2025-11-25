@@ -10,14 +10,8 @@ require('./app_api/models/db');
 const indexRouter = require('./app_server/routes/index');
 const usersRouter = require('./app_server/routes/users');
 const apiRouter = require('./app_api/routes/index');
-var app = express();
 
-const cors = require('cors');
-const corsOptions = {
-  origin: 'https://loc8r-netlify-app.netlify.app',
-  optionsSuccessStatus: 200 // For legacy browser support
-};
-app.use(cors(corsOptions));
+var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'app_server', 'views'));
@@ -29,11 +23,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use('/api', (req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-with, Content-type, Accept, Authorization");
-//   next();
-// });
+app.use('/api', (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-with, Content-type, Accept, Authorization");
+  next();
+});
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -56,5 +50,3 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
-
-
